@@ -533,7 +533,147 @@
             <!--! [End] Header Right !-->
         </div>
     </header>
- 
+<?php
+// 1. Connection-ka database-ka
+require_once('conn.php'); 
+
+// Hubi variable-ka database-ka (hadii uu yahay $con ama $conn)
+$db = isset($conn) ? $conn : $con; 
+
+// 2. Hubi in ID-ga macmiilka la soo gudbiyay
+if (!isset($_GET['id']) || empty($_GET['id'])) {
+    echo "<script>window.location.href='customers-view.php';</script>";
+    exit();
+}
+
+$id = mysqli_real_escape_string($db, $_GET['id']);
+
+// 3. Soo saar xogta macmiilka (customer_care ama customers table-kaaga)
+$query = "SELECT * FROM customer_care WHERE id = '$id'";
+$result = mysqli_query($db, $query);
+$row = mysqli_fetch_assoc($result);
+
+if (!$row) {
+    echo "<div class='alert alert-danger m-5'>Macmiilkan laguma helin database-ka!</div>";
+    exit();
+}
+
+// Qiimaha lacagta (Hadii ay jirto)
+$display_price = isset($row['price']) ? "$" . number_format($row['price'], 2) : "N/A";
+?>
+
+<style>
+    .info-label { font-size: 11px; text-transform: uppercase; color: #888; font-weight: 700; letter-spacing: 0.5px; }
+    .info-value { font-size: 14px; font-weight: 600; color: #333; }
+    .avatar-label { background: #f0f4ff; color: #4e73df; border: 2px solid #fff; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .stats-box { background: #f8f9fa; border-radius: 12px; padding: 12px; border: 1px solid #edf2f9; transition: 0.3s; }
+    .stats-box:hover { background: #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+    .message-content { border-left: 4px solid #4e73df; background: #f9faff; line-height: 1.6; }
+    
+    @media print {
+        .no-print, .nxl-navigation, .nxl-header, .btn, .breadcrumb { display: none !important; }
+        .nxl-container { margin: 0; padding: 0; width: 100%; position: absolute; left: 0; top: 0; }
+        .card { border: 1px solid #eee !important; box-shadow: none !important; }
+        body { background: white !important; }
+    }
+</style>
+
+<main class="nxl-container">
+    <div class="nxl-content p-4">
+        <div class="page-header d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+            <div>
+                <nav aria-label="breadcrumb" class="no-print">
+                    <ol class="breadcrumb small mb-2">
+                        <li class="breadcrumb-item"><a href="customers-view.php" class="text-decoration-none">Customers</a></li>
+                        <li class="breadcrumb-item active">Inquiry Report</li>
+                    </ol>
+                </nav>
+                <h3 class="fw-bold mb-0 text-dark">
+                    <i class="bi bi-file-earmark-medical me-2 text-primary"></i>Inquiry Report
+                </h3>
+            </div>
+            <div class="d-flex gap-2 no-print">
+                <a href="customers-view.php" class="btn btn-light border px-4 fw-bold text-uppercase" style="font-size: 12px;">Back</a>
+                <button onclick="window.print()" class="btn btn-dark px-4 fw-bold shadow-sm text-uppercase" style="font-size: 12px;">
+                    <i class="bi bi-printer me-2"></i>Print Report
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm mb-4 rounded-4">
+                    <div class="card-body p-4 text-center">
+                        <div class="avatar-label rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; font-size: 30px;">
+                            <?php echo strtoupper(substr($row['full_name'], 0, 1)); ?>
+                        </div>
+                        <h5 class="fw-bold mb-1 text-dark"><?php echo htmlspecialchars($row['full_name']); ?></h5>
+                        <span class="badge bg-soft-success text-success px-3 py-2 rounded-pill">
+                            <i class="bi bi-check-circle-fill me-1"></i> Verified Lead
+                        </span>
+                        
+                        <div class="mt-4 text-start bg-light p-3 rounded-3">
+                            <h6 class="info-label border-bottom pb-2 mb-3">Customer Contact</h6>
+                            <div class="mb-3">
+                                <label class="info-label d-block text-muted">Phone Number</label>
+                                <span class="info-value"><i class="bi bi-telephone me-2 text-primary"></i><?php echo htmlspecialchars($row['mobile']); ?></span>
+                            </div>
+                            <div class="mb-3">
+                                <label class="info-label d-block text-muted">Email Address</label>
+                                <span class="info-value"><i class="bi bi-envelope me-2 text-primary"></i><?php echo htmlspecialchars($row['email']); ?></span>
+                            </div>
+                            <div>
+                                <label class="info-label d-block text-muted">City / Location</label>
+                                <span class="info-value"><i class="bi bi-geo-alt me-2 text-primary"></i><?php echo htmlspecialchars($row['city'] ?? 'Garowe, Somalia'); ?></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+      <div class="col-lg-8">
+    <div class="card border-0 shadow-sm mb-4 rounded-4">
+        <div class="card-header bg-white py-3 border-bottom rounded-top-4">
+            <h6 class="fw-bold mb-0 text-primary">Inquiry Details</h6>
+        </div>
+        <div class="card-body p-4">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h4 class="fw-bold mb-1 text-dark text-capitalize">
+                                <?php echo htmlspecialchars($row['subject'] ?? 'General Inquiry'); ?>
+                            </h4>
+                            <p class="text-muted small mb-0">
+                                <i class="bi bi-calendar-check me-1"></i> 
+                                Received on: <?php echo date('M d, Y', strtotime($row['created_at'] ?? 'now')); ?>
+                            </p>
+                        </div>
+                        <?php if(isset($display_price) && $display_price != 'N/A'): ?>
+                            <h4 class="text-primary fw-bold"><?php echo $display_price; ?></h4>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <div class="message-content p-4 rounded-3" style="background-color: #f8f9fa; border-left: 5px solid #4e73df;">
+                        <label class="info-label d-block mb-2 text-primary" style="font-size: 10px; letter-spacing: 1px;">MESSAGE BODY</label>
+                        <p class="mb-0 text-dark" style="font-size: 16px; line-height: 1.8; color: #333 !important;">
+                            <?php echo nl2br(htmlspecialchars($row['message'])); ?>
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-5 d-none d-print-block">
+        <hr>
+        <small class="text-muted text-uppercase">End of Customer Report</small>
+    </div>
+</div>
+        </div>
+    </div>
+</main>
     <!--! ================================================================ !-->
     <!--! [End] Main Content !-->
     <!--! ================================================================ !-->

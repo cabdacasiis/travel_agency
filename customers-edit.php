@@ -602,160 +602,108 @@
         </div>
     </header>
     <?php
-    // 1. Connection-ka database-ka
-    require_once('conn.php');
+// 1. Connection-ka database-ka
+require_once('conn.php');
 
-    // 2. Delete Logic
-    if (isset($_GET['delete'])) {
-        $id = mysqli_real_escape_string($con, $_GET['delete']);
-        mysqli_query($con, "DELETE FROM customer_care WHERE id='$id'");
-        echo "<script>window.location.href='customers-care.php';</script>";
-        exit();
+// 2. Hubi in ID-ga la soo diray
+if (!isset($_GET['id']) || empty($_GET['id'])) {
+    header("Location: customers-care.php");
+    exit();
+}
+
+$id = mysqli_real_escape_string($con, $_GET['id']);
+
+// 3. Cusboonaysiinta Xogta (Update Logic)
+if (isset($_POST['update_customer'])) {
+    $full_name = mysqli_real_escape_string($con, $_POST['full_name']);
+    $email = mysqli_real_escape_string($con, $_POST['email']);
+    $mobile = mysqli_real_escape_string($con, $_POST['mobile']);
+    $subject = mysqli_real_escape_string($con, $_POST['subject']);
+    $message = mysqli_real_escape_string($con, $_POST['message']);
+
+    $update_query = "UPDATE customer_care SET 
+                    full_name = '$full_name', 
+                    email = '$email', 
+                    mobile = '$mobile', 
+                    Subject = '$subject', 
+                    message = '$message' 
+                    WHERE id = '$id'";
+
+    if (mysqli_query($con, $update_query)) {
+        echo "<script>alert('Data Is Updated!'); window.location.href='customers-care.php';</script>";
+    } else {
+        echo "Error updating record: " . mysqli_error($con);
     }
+}
 
-    // 3. Soo saar xogta
-    $result = mysqli_query($con, "SELECT * FROM customer_care ORDER BY id DESC");
-    ?>
+// 4. Soo saar xogta macmiilka hadda si loogu qoro Form-ka
+$result = mysqli_query($con, "SELECT * FROM customer_care WHERE id = '$id'");
+$row = mysqli_fetch_assoc($result);
 
-    <main class="nxl-container">
-        <div class="nxl-content">
-            <div class="page-header">
-                <div class="page-header-left d-flex align-items-center">
-                    <div class="page-header-title">
-                        <h5 class="m-b-10">Customer Care Management</h5>
-                    </div>
-                    <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="index.php">Admin</a></li>
-                        <li class="breadcrumb-item">Customer Care</li>
-                    </ul>
-                </div>
+if (!$row) {
+    echo "Macmiilkan laguma helin database-ka!";
+    exit();
+}
+?>
+
+<main class="nxl-container">
+    <div class="nxl-content p-4">
+        <div class="page-header d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="fw-bold text-dark mb-0">Edit Customer Details</h4>
+                <small class="text-muted">Wax ka beddel macluumaadka macmiilka #<?php echo $id; ?></small>
             </div>
+            <a href="customers-care.php" class="btn btn-light border fw-bold">BACK TO LIST</a>
+        </div>
 
-            <div class="main-content">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="card stretch stretch-full border-0 shadow-sm">
-                            <div class="card-header d-flex align-items-center justify-content-between">
-                                <h5 class="card-title mb-0 text-primary">Customer Messages</h5>
-                                <button class="btn btn-sm btn-light-primary" onclick="window.location.reload();">
-                                    <i class="bi bi-arrow-clockwise me-1"></i> Refresh
-                                </button>
-                            </div>
-                            <div class="card-body p-0">
-                                <div class="table-responsive" style="overflow: visible !important;">
-                                    <table class="table table-hover mb-0 align-middle">
-                                        <thead class="bg-light">
-                                            <tr>
-                                                <th class="ps-4" style="width: 80px;">ID</th>
-                                                <th>Customer</th>
-                                                <th>Contact Info</th>
-                                                <th>Subject & Message</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php
-                                            while ($row = mysqli_fetch_assoc($result)):
-                                                $row_id = $row['Id'] ?? $row['id'] ?? $row['ID'];
-                                                $phone_raw = preg_replace('/[^0-9]/', '', $row['mobile']);
-                                                $short_message = (strlen($row['message']) > 45) ? substr($row['message'], 0, 45) . '...' : $row['message'];
-                                                ?>
-                                                <tr>
-                                                    <td class="ps-4 text-muted">#<?php echo $row_id; ?></td>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <div
-                                                                class="avatar-text avatar-md bg-soft-primary text-primary me-3 fw-bold">
-                                                                <?php echo strtoupper(substr($row['full_name'], 0, 1)); ?>
-                                                            </div>
-                                                            <div>
-                                                                <span
-                                                                    class="fw-bold d-block text-dark text-capitalize"><?php echo $row['full_name']; ?></span>
-                                                                <small class="text-muted">Ref:
-                                                                    <?php echo date('Y'); ?>-<?php echo $row_id; ?></small>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <div class="mb-1">
-                                                            <a href="mailto:<?php echo $row['email']; ?>"
-                                                                class="text-muted small text-decoration-none">
-                                                                <i class="bi bi-envelope-fill me-1 text-primary"></i>
-                                                                <?php echo $row['email']; ?>
-                                                            </a>
-                                                        </div>
-                                                        <div>
-                                                            <a href="tel:<?php echo $row['mobile']; ?>"
-                                                                class="text-dark fw-bold small text-decoration-none">
-                                                                <i class="bi bi-telephone-fill me-1 text-success"></i>
-                                                                <?php echo $row['mobile']; ?>
-                                                            </a>
-                                                        </div>
-                                                    </td>
-                                                    <td style="max-width: 250px;">
-                                                        <div class="fw-bold text-dark small mb-1">
-                                                            <?php echo $row['Subject']; ?></div>
-                                                        <div class="text-muted small text-truncate"
-                                                            title="<?php echo $row['message']; ?>">
-                                                            <?php echo $short_message; ?>
-                                                        </div>
-                                                    </td>
-                                                    <td class="text-end pe-4">
-                                                        <div class="dropdown">
-                                                            <button class="btn btn-icon btn-sm btn-light"
-                                                                data-bs-toggle="dropdown" aria-expanded="false">
-                                                                <i class="bi bi-three-dots-vertical"></i>
-                                                            </button>
-                                                            <ul
-                                                                class="dropdown-menu dropdown-menu-end shadow-lg border-0 py-2">
-                                                                <li>
-                                                                    <a class="dropdown-item d-flex align-items-center py-2"
-                                                                        href="customers-view.php?id=<?php echo $row_id; ?>">
-                                                                        <i class="bi bi-eye me-2 text-secondary"></i>
-                                                                        <span>View</span>
-                                                                    </a>
-                                                                </li>
-                                                                <li>
-                                                                    <a class="dropdown-item d-flex align-items-center py-2 text-success"
-                                                                        href="https://wa.me/<?php echo $phone_raw; ?>"
-                                                                        target="_blank">
-                                                                        <i class="bi bi-whatsapp me-2"></i>
-                                                                        <span>WhatsApp</span>
-                                                                    </a>
-                                                                </li>
-                                                                <li>
-                                                                    <a class="dropdown-item d-flex align-items-center py-2"
-                                                                        href="customers-edit.php?id=<?php echo $row_id; ?>">
-                                                                        <i class="bi bi-pencil me-2 text-secondary"></i>
-                                                                        <span>Edit</span>
-                                                                    </a>
-                                                                </li>
-                                                                <li>
-                                                                    <hr class="dropdown-divider opacity-50">
-                                                                </li>
-                                                                <li>
-                                                                    <a class="dropdown-item d-flex align-items-center py-2 text-danger"
-                                                                        href="?delete=<?php echo $row_id; ?>"
-                                                                        onclick="return confirm('Ma hubtaa inaad tirtirto farriintan?')">
-                                                                        <i class="bi bi-trash3 me-2"></i>
-                                                                        <span>Delete</span>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            <?php endwhile; ?>
-                                        </tbody>
-                                    </table>
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-5">
+                        <form action="" method="POST">
+                            <div class="row g-3">
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label fw-bold small text-uppercase">Full Name</label>
+                                    <input type="text" name="full_name" class="form-control form-control-lg bg-light" 
+                                           value="<?php echo htmlspecialchars($row['full_name']); ?>" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold small text-uppercase">Email Address</label>
+                                    <input type="email" name="email" class="form-control bg-light" 
+                                           value="<?php echo htmlspecialchars($row['email']); ?>" required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold small text-uppercase">Mobile Number</label>
+                                    <input type="text" name="mobile" class="form-control bg-light" 
+                                           value="<?php echo htmlspecialchars($row['mobile']); ?>" required>
+                                </div>
+
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label fw-bold small text-uppercase">Subject</label>
+                                    <input type="text" name="subject" class="form-control bg-light" 
+                                           value="<?php echo htmlspecialchars($row['Subject']); ?>" required>
+                                </div>
+
+                                <div class="col-md-12 mb-4">
+                                    <label class="form-label fw-bold small text-uppercase">Message</label>
+                                    <textarea name="message" class="form-control bg-light" rows="5" required><?php echo htmlspecialchars($row['message']); ?></textarea>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <button type="submit" name="update_customer" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm">
+                                        SAVE CHANGES
+                                    </button>
                                 </div>
                             </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
+</main>
     <!--! ================================================================ !-->
     <!--! [End] Main Content !-->
     <!--! ================================================================ !-->
