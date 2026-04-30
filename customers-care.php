@@ -617,11 +617,19 @@
                     </td>
                     
                     <td>
-                        <span class="badge bg-soft-secondary text-secondary border">
-                            <i class="bi bi-clock me-1"></i>
-                            <?php echo date('M d, Y', strtotime($date_val)); ?>
-                        </span>
-                    </td>
+    <div class="d-flex flex-column">
+        <!-- Taariikhda -->
+        <span class="text-dark fw-bold small">
+            <i class="bi bi-calendar-event me-1 text-primary"></i>
+            <?php echo date('M d, Y', strtotime($date_val)); ?>
+        </span>
+        <!-- Saacadda -->
+        <small class="text-muted" style="font-size: 11px;">
+            <i class="bi bi-clock me-1"></i>
+            <?php echo date('h:i A', strtotime($date_val)); ?>
+        </small>
+    </div>
+</td>
 
                     <td class="text-end pe-4">
                         <div class="dropdown">
