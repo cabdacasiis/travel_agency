@@ -1,41 +1,49 @@
-# Duralux - CRM Admin & Dashboard HTML Template
-#### Preview
+# Travel Agency Management System
 
- - [Demo](https://themewagon.github.io/Duralux-admin/)
+A full-stack web-based Travel Agency Management System built to manage travel services, customers, and administrative operations.
 
-#### Download
- - [Download from ThemeWagon](https://themewagon.com/themes/Duralux-admin/)
+## Overview
 
-## Getting Started
+Travel Agency Management System is a PHP and MySQL based application that helps manage travel agency activities through an easy-to-use dashboard. The system provides tools for managing customers, services, users, and business information.
 
-1. Clone Repository
-```
-git clone https://github.com/themewagon/Duralux-admin.git
-```
-2. Install Dependencies
-```
-npm i
-```
-3. Run the development server:
+## Features
+
+- User authentication and login system
+- Admin dashboard
+- Customer management
+- Service management
+- CRUD operations (Create, Read, Update, Delete)
+- Database integration with MySQL
+- Responsive user interface
+- Organized management workflow
+
+## Technologies Used
+
+- PHP
+- MySQL
+- HTML5
+- CSS3
+- JavaScript
+- Bootstrap
+- SCSS
+
+## Project Structure
+
+- Frontend: HTML, CSS, JavaScript, Bootstrap
+- Backend: PHP
+- Database: MySQL
+
+## My Role
+
+I worked as a Full-Stack Developer, implementing backend functionality, database integration, user management features, and customizing the application to create a complete travel agency management solution.
+
+## Screenshots
+
+(Add screenshots of the dashboard, login page, and main features here)
+
+## Installation
+
+1. Clone the repository:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-## Author 
-```
-Design and code is completely written by theme_ocean and development team. 
-```
-
-## License
-
- - Design and Code is Copyright &copy; [theme_ocean](https://theme_ocean.com)
- - Licensed cover under [MIT]
- - Distributed by [ThemeWagon](https://themewagon.com)
-
+git clone https://github.com/cabdacasiis/travel_agency.git
